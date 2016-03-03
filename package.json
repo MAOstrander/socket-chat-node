@@ -6,6 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js",
+    "postinstall": "bower install",
     "serve": "nodemon server.js"
   },
   "repository": {
@@ -23,7 +24,9 @@
     "nodemon": "^1.9.1"
   },
   "dependencies": {
+    "bower": "^1.7.7",
     "express": "^4.13.4",
+    "jade": "^1.11.0",
     "socket.io": "^1.4.5"
   }
 }

@@ -3,14 +3,26 @@
 const express = require('express');
 const app = express();
 const server = require('http').createServer(app);
-const io = require('socket.io')(server);
+const ws = require('socket.io')(server);
 
 const PORT = process.env.PORT || 3000;
 
+app.set('view engine', 'jade');
+
+app.use(express.static('public'));
+
 app.get('/', (req, res) => {
-  res.send('hello?')
+  res.render('index');
 })
 
 server.listen(PORT, () => {
   console.log("HEY, You've got a running server on port ", PORT);
 });
+
+ws.on('connection', socket => {
+  console.log("Socket to me!");
+
+  socket.on('sendChat', (msg) => {
+    ws.emit('receiveChat', msg);
+  });
+})
