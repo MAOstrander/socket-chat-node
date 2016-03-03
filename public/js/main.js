@@ -6,41 +6,59 @@
     console.log("Signature socket, you're ready to rock-it");
   });
 
-  ws.on('receiveChat', (msg) => {
-    displayChat(msg.target, msg.myMessage);
+  ws.on('receiveChat', (msgs) => {
+    msgs.forEach(displayChat);
   });
 
   const myForm = document.querySelector('form');
-  const target = document.querySelector("input[name='target'");
-  const myMessage = document.querySelector("input[name='message'");
+  const sender = document.querySelector("input[name='sender'");
+  const mymessage = document.querySelector("input[name='message'");
   const ul = document.querySelector('ul')
 
   myForm.addEventListener('submit', () => {
-    const [ n, t ] = [ target.value, myMessage.value ]
-    ws.emit('sendChat', {
-      target: n,
-      myMessage: t
-    })
+    const chat = {
+      sender:sender.value,
+      mymessage: mymessage.value
+    };
+    ws.emit('sendChat', chat);
 
-    displayChat(n, t);
+    // displayChat(chat);
     event.preventDefault();
   })
 
-  function displayChat (name, text) {
-    const li = generateLI(name, text);
+  function displayChat (chat) {
+    if (!document.querySelector(`[data-id="${chat._id}"]`)) {
+      const li = generateLI(chat)
 
-    target.value = '';
-    myMessage.value = '';
-    ul.appendChild(li);
+      ul.appendChild(li)
+    }
+    mymessage.value = '';
   }
 
-  function generateLI (name, text) {
+  function generateLI (chat) {
     const li = document.createElement('li')
-    const textNode = document.createTextNode(`${name}: ${text}`);
+    const textNode = document.createTextNode(`${chat.sender}: ${chat.mymessage}`);
+    const dataId = document.createAttribute('data-id');
+    dataId.value = chat._id;
 
+    li.setAttributeNode(dataId);
     li.appendChild(textNode);
     return li;
   }
 
-}());
+  function getJSON(url, cb) {
+    const request = new XMLHttpRequest();
+    request.open('GET', url);
+    request.onload = () => {
+      cb(JSON.parse(request.responseText))
+    };
+    request.send();
+  }
 
+  // document.addEventListener('DOMContentLoaded', () => {
+  //   getJSON('/chats', (chats) => {
+  //     chats.forEach(chat => displayChat(chat))
+  //   })
+  // })
+
+}());
